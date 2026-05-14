@@ -13,7 +13,7 @@ export default function Navbar() {
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  nav: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 24px", background: "#1565c0", color: "white" },
+  nav: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 24px", background: "#000000", color: "white" },
   logo: { margin: 0, color: "white" },
   links: { display: "flex", gap: 24 },
   link: { color: "white", textDecoration: "none", fontWeight: 600 },
