@@ -27,8 +27,7 @@ export default function NotificationCard({ notification, rank, isNew }: Props) {
       transition: "background 0.2s",
       position: "relative",
     }}>
-
-      {/* Left: rank or dot */}
+      
       <div style={{
         minWidth: 32,
         display: "flex",
@@ -57,7 +56,7 @@ export default function NotificationCard({ notification, rank, isNew }: Props) {
         )}
       </div>
 
-      {/* Middle: type badge + message */}
+     
       <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
           <span style={{
@@ -102,7 +101,7 @@ export default function NotificationCard({ notification, rank, isNew }: Props) {
         </p>
       </div>
 
-      {/* Right: timestamp */}
+     
       <span style={{
         color: "#888",
         fontSize: 11,
