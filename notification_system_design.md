@@ -30,7 +30,7 @@ Type weight is the primary sort key (×1000 multiplier), recency is secondary (�
 
 ### Maintaining Top N Efficiently
 
-Notifications are fetched fresh from the API each time (no local DB). A Max-Heap or `.sort()` on the scored array gives O(n log n) selection of top N. Since n is bounded (API pagination), this is efficient in practice.
+Notifications are fetched fresh from the API each time (no local DB). A `.sort()` on the scored array gives O(n log n) selection of top N. Since n is bounded (API pagination), this is efficient in practice.
 
 New notifications arriving are handled by re-fetching on an interval (every 30 seconds). The top N is recalculated each fetch — ensuring stale notifications drop out and fresh ones enter automatically.
 
@@ -54,7 +54,7 @@ display Priority Inbox
 
 Every significant event is logged via `Log(stack, level, package, message)`:
 - API calls: `info` level, `api` package
-- State changes: `debug` level, `state` package
+- State changes: `debug` level, `page` package
 - Errors: `error` level, appropriate package
 - Fatal failures: `fatal` level
 
@@ -64,26 +64,41 @@ Every significant event is logged via `Log(stack, level, package, message)`:
 
 ### Frontend Architecture
 
-**Framework**: React (TypeScript) + Material UI
+**Framework**: React (TypeScript) + Vanilla CSS (inline styles)
 
 **Pages**:
-1. **All Notifications** (`/`) — paginated, filterable by type, highlights new arrivals
-2. **Priority Inbox** — top N by score, configurable N
+1. **All Notifications** (`/`) — filterable by type (All / Event / Result / Placement), highlights new arrivals with "NEW" badge
+2. **Priority Inbox** (`/priority`) — top N by score, configurable N via number input
 
 **Key Design Decisions**:
 - `seenIds` ref tracks which notification IDs have been shown before — enables "NEW" badge on fresh arrivals without a database
-- Auto-refresh every 30 seconds via `setInterval`
-- MUI `Tabs` for navigation, `Pagination` for all-notifications page
+- `isFirstLoad` ref ensures that on initial page load and filter change, all visible notifications are marked as seen immediately (no false "NEW" badges)
+- Auto-refresh every 30 seconds via `setInterval` — interval restarts on filter change
+- Auto-refresh does not trigger loading spinner; spinner only shows on first load for better UX
 - Filter by `notification_type` uses API query param directly
-- Mobile-responsive via MUI `useMediaQuery`
+- Mobile-responsive via inline CSS (fluid widths, wrapping flex layouts)
 
 **Component Structure**:
 ```
 App
-├── AppBar (tabs, refresh button, new-count badge)
-├── Filters Row (type filter | top-N input)
-├── NotifCard (per notification)
-└── Pagination / Snackbar
+├── Navbar (app title, All Notifications link, Priority Inbox link)
+├── Home Page (/)
+│   ├── Header (title, date, item count)
+│   ├── Tab Filter (All | Event | Result | Placement)
+│   └── NotificationCard (per notification)
+└── Priority Page (/priority)
+    ├── Header (title, subtitle)
+    ├── Top-N Control (number input)
+    └── NotificationCard with rank number (per notification)
 ```
 
-**Styling**: Material UI only (no ShadCN, no Tailwind, no other CSS libraries). Vanilla CSS for minor overrides only.
+**NotificationCard**:
+- Shows type badge (PLACEMENT / EVENT / RESULT) with distinct styling per type
+- Shows "● NEW" indicator for unseen notifications
+- Shows formatted timestamp (e.g. "May 13, 06:09 PM")
+- Shows rank number (01, 02, 03...) on Priority Inbox, dot indicator on All Notifications
+
+**Styling**: Vanilla CSS via inline styles only (no external CSS libraries). Typography uses Georgia serif for content, Courier New monospace for labels and metadata — newspaper-inspired design.
+
+### Note
+API token expired during testing. Screenshots captured show the working state of the application. Full functionality includes both desktop and mobile responsive views.
