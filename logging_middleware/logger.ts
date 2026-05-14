@@ -1,4 +1,4 @@
-const BASE_URL = "http://4.224.186.213/evaluation-service";
+const BASE_URL = "evaluation-service";
 
 type Stack = "backend" | "frontend";
 type Level = "debug" | "info" | "warn" | "error" | "fatal";
